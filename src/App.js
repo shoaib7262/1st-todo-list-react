@@ -1,24 +1,74 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Header from "./my components/Header";
+import Todos from "./my components/Todos";
+import AddItem from "./my components/addItem";
+import About from "./my components/About";
+
+import Footer from "./my components/Footer";
+import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
+  let initTodo;
+  if (localStorage.getItem("todo") === null) {
+    initTodo = [];
+  } else {
+    initTodo = JSON.parse(localStorage.getItem("todo"));
+  }
+  const onDelete = (todos) => {
+    settodo(
+      todo.filter((e) => {
+        return e !== todos;
+      })
+    );
+    localStorage.setItem("todo", JSON.stringify(todo));
+  };
+
+  const addItem = (name, address) => {
+    let sno;
+    if (todo.length === 0) {
+      sno = 0;
+    } else {
+      sno = todo[todo.length - 1].sno + 1;
+    }
+
+    const myTodo = {
+      sno: sno,
+      name: name,
+      address: address,
+    };
+    settodo([...todo, myTodo]);
+  };
+  const [todo, settodo] = useState(initTodo);
+
+  useEffect(() => {
+    localStorage.setItem("todo", JSON.stringify(todo));
+  }, [todo]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Router>
+        <Header />
+        <Switch>
+          <Route
+           exact path="/"
+            render={() => {
+              return (
+                <>
+                  <AddItem addItem={addItem} />
+                  <Todos todo={todo} onDelete={onDelete} />
+                </>
+              );
+            }}
+          ></Route>
+          <Route exact path="/about">
+            <About />
+          </Route>
+        </Switch>
+
+        <Footer />
+      </Router>
+    </>
   );
 }
 
